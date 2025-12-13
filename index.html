@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Удостоверение</title>
+
+  <!-- iPhone PWA поведение -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Удостоверение" />
+  <link rel="apple-touch-icon" href="icon.png" />
+  <meta name="format-detection" content="telephone=no" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="header">
+    <div class="top-bar">
+      <span class="back-arrow">&#8249;</span>
+      <h2>Удостоверение личности</h2>
+    </div>
+    <div class="switcher">
+      <button id="tab-doc" class="active">Документ</button>
+      <button id="tab-info">Реквизиты</button>
+      <div class="slider" id="slider"></div>
+    </div>
+  </div>
+
+  <main>
+    <section id="page-doc" class="page active">
+      <img id="idImage" src="id.jpg" alt="Удостоверение" />
+      <div class="btn-group">
+        <button class="blue-button" id="showQR">Предъявить документ</button>
+        <button class="outline-button">Отправить документ</button>
+        <label class="upload-label">Загрузить/заменить фото
+          <input type="file" id="fileInput" accept="image/*" />
+        </label>
+      </div>
+    </section>
+
+    <section id="page-info" class="page">
+      <div class="info-block">
+        <!-- Блок с реквизитами -->
+        <div class="info-line">
+          <div class="info-text">
+            <p class="label">ФИО</p>
+            <p class="value">Габдулин Спандияр Маратович</p>
+          </div>
+          <img src="copy-icon.png" class="copy-icon" data-copy="Габдулин Спандияр Маратович" />
+        </div>
+
+        <div class="info-line">
+          <div class="info-text">
+            <p class="label">ИИН</p>
+            <p class="value">030905550370</p>
+          </div>
+          <img src="copy-icon.png" class="copy-icon" data-copy="030905550370" />
+        </div>
+
+        <div class="info-line">
+          <div class="info-text">
+            <p class="label">Дата рождения</p>
+            <p class="value">05.09.2003</p>
+          </div>
+          <img src="copy-icon.png" class="copy-icon" data-copy="05.09.2003" />
+        </div>
+
+        <div class="info-line">
+          <div class="info-text">
+            <p class="label">Номер документа</p>
+            <p class="value">059151918</p>
+          </div>
+          <img src="copy-icon.png" class="copy-icon" data-copy="059151918" />
+        </div>
+
+        <div class="info-line">
+          <div class="info-text">
+            <p class="label">Дата выдачи</p>
+            <p class="value">11.10.2024</p>
+          </div>
+          <img src="copy-icon.png" class="copy-icon" data-copy="11.10.2024" />
+        </div>
+
+        <div class="info-line">
+          <div class="info-text">
+            <p class="label">Срок действия</p>
+            <p class="value">10.10.2034</p>
+          </div>
+          <img src="copy-icon.png" class="copy-icon" data-copy="10.10.2034" />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Всплывающее окно с QR -->
+  <div class="bottom-sheet" id="qrSheet">
+    <div class="sheet-drag-handle"></div>
+    <div class="sheet-content">
+      <p class="sheet-title">Удостоверение личности</p>
+      <p class="sheet-subtitle">Покажите QR-код сотруднику</p>
+      <img src="QRCode.png" class="qr-img" alt="QR-код">
+      <p class="sheet-subtext">или скажите код</p>
+      <p class="sheet-code">291583</p>
+    </div>
+  </div>
+
+  <script>
+    // Переключение вкладок
+    const tabDoc = document.getElementById("tab-doc");
+    const tabInfo = document.getElementById("tab-info");
+    const slider = document.getElementById("slider");
+    const pageDoc = document.getElementById("page-doc");
+    const pageInfo = document.getElementById("page-info");
+
+    tabDoc.onclick = () => {
+      tabDoc.classList.add("active");
+      tabInfo.classList.remove("active");
+      pageDoc.classList.add("active");
+      pageInfo.classList.remove("active");
+      slider.style.left = "0%";
+    };
+
+    tabInfo.onclick = () => {
+      tabInfo.classList.add("active");
+      tabDoc.classList.remove("active");
+      pageInfo.classList.add("active");
+      pageDoc.classList.remove("active");
+      slider.style.left = "50%";
+    };
+
+    // Загрузка своего фото
+    const fileInput = document.getElementById("fileInput");
+    const idImage = document.getElementById("idImage");
+
+    fileInput.addEventListener("change", function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          idImage.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // QR Sheet
+    const sheet = document.getElementById("qrSheet");
+    document.getElementById("showQR").onclick = () => sheet.classList.add("show");
+    sheet.addEventListener("click", (e) => {
+      if (e.target === sheet) sheet.classList.remove("show");
+    });
+
+    // Свайп вниз
+    let startY = null;
+    sheet.addEventListener("touchstart", (e) => { startY = e.touches[0].clientY; });
+    sheet.addEventListener("touchmove", (e) => {
+      if (!startY) return;
+      const diff = e.touches[0].clientY - startY;
+      if (diff > 70) sheet.classList.remove("show");
+    });
+    sheet.addEventListener("touchend", () => { startY = null; });
+
+    // Копирование
+    document.querySelectorAll(".copy-icon").forEach((icon) => {
+      icon.addEventListener("click", () => {
+        const value = icon.getAttribute("data-copy");
+        navigator.clipboard.writeText(value);
+        icon.style.opacity = "1";
+        setTimeout(() => (icon.style.opacity = "0.6"), 800);
+      });
+    });
+  </script>
+</body>
+</html>
