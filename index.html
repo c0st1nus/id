@@ -34,9 +34,6 @@
       <div class="btn-group">
         <button class="blue-button" id="showQR">Предъявить документ</button>
         <button class="outline-button">Отправить документ</button>
-        <label class="upload-label">Загрузить/заменить фото
-          <input type="file" id="fileInput" accept="image/*" />
-        </label>
       </div>
     </section>
 
@@ -129,21 +126,6 @@
       pageDoc.classList.remove("active");
       slider.style.left = "50%";
     };
-
-    // Загрузка своего фото
-    const fileInput = document.getElementById("fileInput");
-    const idImage = document.getElementById("idImage");
-
-    fileInput.addEventListener("change", function () {
-      const file = this.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          idImage.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    });
 
     // QR Sheet
     const sheet = document.getElementById("qrSheet");
